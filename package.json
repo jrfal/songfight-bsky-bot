@@ -1,5 +1,5 @@
 {
-  "name": "bsky-bot",
+  "name": "songfight-bsky-bot",
   "version": "1.0.0",
   "description": "A template repo for building Bluesky bots",
   "main": "dist/index.js",
@@ -10,7 +10,8 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "start": "node .",
-    "dev": "nodenv ."
+    "dev": "nodenv .",
+    "check": "node ./dist/check.js"
   },
   "keywords": [
     "bsky",
@@ -19,9 +20,8 @@
     "bot"
   ],
   "author": {
-    "name": "Phil Nash",
-    "email": "philnash@gmail.com",
-    "url": "https://philna.sh/"
+    "name": "Jeff Fal",
+    "email": "jefffal@gmail.com"
   },
   "license": "MIT",
   "devDependencies": {
@@ -34,6 +34,8 @@
   },
   "dependencies": {
     "@atproto/api": "^0.13.18",
+    "dotenv": "^16.4.7",
+    "fs": "^0.0.1-security",
     "zod": "^3.23.8"
   }
 }
