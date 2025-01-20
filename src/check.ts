@@ -8,57 +8,72 @@ const filename = "./data/posted.json";
 const nextFightUrl = "https://sfjukebox.org/fights/?next=true&format=json";
 const allFightsUrl = "https://sfjukebox.org/fights?format=json";
 
+// get the feed
 const bskyResponse = await fetch(bskyUrl);
-
 if (!bskyResponse.ok) throw new Error("Error in Bluesky call");
 const bskyData = await bskyResponse.json();
+const { feed } = bskyData;
 
 // const data = await readFile(filename, "utf8");
 // const postedData = JSON.parse(data);
 // let newPostedData = postedData;
 
-// check for a new fight to post about
+// get the next fight
 const nextFightResponse = await fetch(nextFightUrl);
-
-if (!nextFightResponse.ok) throw new Error("Error in sfjukebox call");
+if (!nextFightResponse.ok) throw new Error("Error in next fight call");
 const nextFightData = await nextFightResponse.json();
-const nextFight = nextFightData.nextFights[0];
 
-const testNextTitle = nextFightTemplate(nextFight);
-bskyData.feed.map((post: any) => console.log(post.post.record.text))
+// get the rest of the fights
+const allFightsResponse = await fetch(allFightsUrl);
 
-// // check for a winner to report
-// const oldFightsResponse = await fetch(allFightsUrl);
+if (!allFightsResponse.ok) throw new Error("Error in all fights call");
+const allFightsData = await allFightsResponse.json();
+const oldFights = allFightsData.fights;
 
-// if (!oldFightsResponse.ok) throw new Error("Error in sfjukebox call");
-// const oldFightsData = await oldFightsResponse.json();
-// const lastFight = oldFightsData.fights[1];
+// put all fights in one list
+const allFights = [...nextFightData.nextFights, ...oldFights];
 
-// if (lastFight.key === postedData.lastFight) {
-//   console.log("No new winner");
-// } else {
-//   const getWinnerText = async () => winnerTemplate(lastFight);
+// cycle back through fights to find which one was last posted as the next fight
+let nextFightTitle = "";
+for (let i = 0; i < allFights.length && i < 10 && nextFightTitle === ""; i++) {
+    const testNextPost = nextFightTemplate(allFights[i]);
+    for (let j = 0; j < feed.length && j < 10 && nextFightTitle === ""; j++) {
+        if (testNextPost == feed[j].post.record.text) {
+            nextFightTitle = allFights[i].title;
+        }
+    }
+}
 
-//   const text = await Bot.run(getWinnerText, { dryRun });
-//   console.log(`[${new Date().toISOString()}] Posted: "${text}"`);
+// cycle back through fights to find which one was last posted as the last fight
+let lastFightKey = "";
+for (let i = 0; i < oldFights.length && i < 10 && lastFightKey === ""; i++) {
+    const testWinnerPost = winnerTemplate(oldFights[i]);
+    for (let j = 0; j < feed.length && j < 10 && lastFightKey === ""; j++) {
+        if (testWinnerPost == feed[j].post.record.text) {
+            lastFightKey = oldFights[i].key;
+        }
+    }
+}
 
-//   newPostedData = { ...newPostedData, lastFight: lastFight.key };
-// }
+// cycle back through fights to find which one was last posted as the current fight
+let currentFightKey = "";
+for (let i = 0; i < oldFights.length && i < 10 && currentFightKey === ""; i++) {
+    const testCurrentPost = currentFightTemplate(oldFights[i]);
+    for (let j = 0; j < feed.length && j < 10 && currentFightKey === ""; j++) {
+        if (testCurrentPost == feed[j].post.record.text) {
+            currentFightKey = oldFights[i].key;
+        }
+    }
+}
 
-// // check for a new current fight
-// const currentFight = oldFightsData.fights[0];
+console.log("Next fight: ", nextFightTitle);
+console.log("Last fight: ", lastFightKey);
+console.log("Current fight: ", currentFightKey);
 
-// if (currentFight.key === postedData.currentFight) {
-//   console.log("No new current fight");
-// } else {
-//   const getCurrentText = async () => currentFightTemplate(currentFight);
+let data = {
+    nextFight: nextFightTitle !== "" ? nextFightTitle : undefined,
+    lastFight: lastFightKey !== "" ? lastFightKey : undefined,
+    currentFight: currentFightKey !== "" ? currentFightKey : undefined,
+};
 
-//   const text = await Bot.run(getCurrentText, { dryRun });
-//   console.log(`[${new Date().toISOString()}] Posted: "${text}"`);
-
-//   newPostedData = { ...newPostedData, currentFight: currentFight.key };
-// }
-
-// if (newPostedData !== postedData) {
-//   await writeFile(filename, JSON.stringify(newPostedData), 'utf8');
-// }
+await writeFile(filename, JSON.stringify(data), 'utf8');
