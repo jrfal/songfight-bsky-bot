@@ -2,7 +2,7 @@ import Bot from "./lib/bot.js";
 import { readFile, writeFile } from "node:fs/promises";
 import { nextFightTemplate, winnerTemplate, currentFightTemplate } from "./templates.js";
 
-const dryRun = true;
+const dryRun = false;
 
 const filename = "./data/posted.json";
 const nextFightUrl = "https://sfjukebox.org/fights/?next=true&format=json";

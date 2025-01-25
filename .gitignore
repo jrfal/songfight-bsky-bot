@@ -130,4 +130,4 @@ dist
 .pnp.*
 
 # data on what's been posted
-data.json
+data
