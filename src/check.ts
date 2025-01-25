@@ -1,5 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
-import { NextFight, LastFight, CurrentFight } from "./types.js";
+import { writeFile, mkdir } from "node:fs/promises";
 import { nextFightTemplate, winnerTemplate, currentFightTemplate } from "./templates.js";
 
 const bskyUrl = "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=faltron.bsky.social";
@@ -76,4 +75,5 @@ let data = {
     currentFight: currentFightKey !== "" ? currentFightKey : undefined,
 };
 
+await mkdir('./data');
 await writeFile(filename, JSON.stringify(data), 'utf8');
