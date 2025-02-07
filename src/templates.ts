@@ -2,6 +2,9 @@ import { NextFight, LastFight, CurrentFight } from "./types.js";
 
 export const songFileName = (title: string) => {
   const words = title.replace(/$The /, "").split(" ");
+  if (words.length == 1) {
+    return words[0].toLowerCase();
+  }
   let filename = "";
   while (filename.length < words.length) {
     filename += words[filename.length][0];
