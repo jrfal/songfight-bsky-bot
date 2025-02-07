@@ -1,16 +1,13 @@
 import Bot from "./lib/bot.js";
-import { readFile, writeFile } from "node:fs/promises";
 import { nextFightTemplate, winnerTemplate, currentFightTemplate } from "./templates.js";
+import getPostedData from "./loading.js";
 
 const dryRun = false;
 
-const filename = "./data/posted.json";
 const nextFightUrl = "https://sfjukebox.org/fights/?next=true&format=json";
 const allFightsUrl = "https://sfjukebox.org/fights?format=json";
 
-const data = await readFile(filename, "utf8");
-const postedData = JSON.parse(data);
-let newPostedData = postedData;
+const postedData = await getPostedData();
 
 // check for a new fight to post about
 const nextFightResponse = await fetch(nextFightUrl);
@@ -26,8 +23,6 @@ if (nextFight.title === postedData.nextFight) {
 
   const text = await Bot.run(getPostText, { dryRun });
   console.log(`[${new Date().toISOString()}] Posted: "${text}"`);
-
-  newPostedData = { ...newPostedData, nextFight: nextFight.title };
 }
 
 // check for a winner to report
@@ -44,8 +39,6 @@ if (lastFight.key === postedData.lastFight) {
 
   const text = await Bot.run(getWinnerText, { dryRun });
   console.log(`[${new Date().toISOString()}] Posted: "${text}"`);
-
-  newPostedData = { ...newPostedData, lastFight: lastFight.key };
 }
 
 // check for a new current fight
@@ -58,10 +51,4 @@ if (currentFight.key === postedData.currentFight) {
 
   const text = await Bot.run(getCurrentText, { dryRun });
   console.log(`[${new Date().toISOString()}] Posted: "${text}"`);
-
-  newPostedData = { ...newPostedData, currentFight: currentFight.key };
-}
-
-if (newPostedData !== postedData) {
-  await writeFile(filename, JSON.stringify(newPostedData), 'utf8');
 }
