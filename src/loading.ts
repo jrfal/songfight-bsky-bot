@@ -1,6 +1,7 @@
+import { bskyAccount } from "./lib/config.js";
 import { nextFightTemplate, winnerTemplate, currentFightTemplate } from "./templates.js";
 
-const bskyUrl = "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=faltron.bsky.social";
+const bskyUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${bskyAccount.identifier}`;
 
 const nextFightUrl = "https://sfjukebox.org/fights/?next=true&format=json";
 const allFightsUrl = "https://sfjukebox.org/fights?format=json";

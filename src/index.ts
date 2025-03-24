@@ -2,7 +2,7 @@ import Bot from "./lib/bot.js";
 import { nextFightTemplate, winnerTemplate, currentFightTemplate } from "./templates.js";
 import getPostedData from "./loading.js";
 
-const dryRun = false;
+const dryRun = true;
 
 const nextFightUrl = "https://sfjukebox.org/fights/?next=true&format=json";
 const allFightsUrl = "https://sfjukebox.org/fights?format=json";
